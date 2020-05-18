@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>BoxOFFICE</title>
+
+	<link rel='stylesheet' href='./style.css'>
+</head>
+
+<body>
+
+	<div class='a'> 박스오피스</div>
+
+	<ul class='movies'>
+		
+
+
+	</ul>
+
+
+
+
+	<script src='./app.js'></script>
+	<script src='jquery-1.12.4.js'></script>
+	<script>
+
+
+
+		$(document).ready(function(){
+
+			var key = '430156241533f1d058c603178cc3ca0e';
+			var d = new Date();
+
+			// 오늘날짜는  api에서 조회가 안되므로 어제날짜로 바꿔준다.
+			d.setDate(d.getDate()-1);
+			
+			// 날짜 양식 : YYYYMMDD , MM 두자리여야 함	
+			var currDate = d.getFullYear() +""
+						+ ((d.getMonth() + 1 > 9) ? d.getMonth() + 1 : 0 + ""+(d.getMonth() + 1))+""
+						+ (d.getDate());
+			var url =`http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.xml?key=${key}&targetDt=${currDate}`;
+
+
+			fetch(url)
+			.then( response => response.text())
+			.then( data =>{
+
+				let parser = new DOMParser();
+				let xml = parser.parseFromString(data, "application/xml");
+				getMovies(xml);
+			})
+		})
+
+		function getMovies(x){
+
+			var ul = document.querySelector('.movies');
+			var movies = x.getElementsByTagName('dailyBoxOffice');
+
+			for( var i = 0; i<movies.length; i++){
+				
+				var li = document.createElement('li');
+				var rank = document.createElement('div');
+				var movieName = document.createElement('div');
+				var openDate = document.createElement('div');
+				var salesAmt = document.createElement('div');
+
+				rank.textContent = '순위 : ' + movies[i].childNodes[1].firstChild.nodeValue;
+				movieName.textContent = '영화이름 : ' + movies[i].childNodes[5].firstChild.nodeValue;
+				openDate.textContent = '개봉일자 : ' + movies[i].childNodes[6].firstChild.nodeValue;
+				salesAmt.textContent = '매출액 : ' + movies[i].childNodes[7].firstChild.nodeValue;
+				
+				li.append(rank);
+				li.append(movieName);
+				li.append(openDate);
+				li.append(salesAmt);
+
+				ul.appendChild(li);
+			}
+			
+		} 
+
+
+
+
+		// window.addEventListener('load', function () {
+		// 	console.log('load');
+
+		// 	var ServiceKey = 'zBzliqrWLgoyUCOWIUbTcCnMzomCAlgY%2B20M4bvIcNJSIqxM9avaAcJcte66%2FrV5j13%2FBghdpLSnFlQaHmhoxQ%3D%3D';
+		// 	var keyEncoding = encodeURI(ServiceKey);
+		// 	var keyEncoding2 = encodeURI(keyEncoding);
+		// 	var xhr = new XMLHttpRequest();
+		// 	var url = 'http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty'; /*URL*/
+		// 	var queryParams = '?' + encodeURIComponent('ServiceKey') + '=' + encodeURIComponent(ServiceKey); /*Service Key*/
+		// 	queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10'); /**/
+		// 	queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); /**/
+		// 	queryParams += '&' + encodeURIComponent('stationName') + '=' + encodeURIComponent('종로구'); /**/
+		// 	queryParams += '&' + encodeURIComponent('dataTerm') + '=' + encodeURIComponent('DAILY'); /**/
+		// 	queryParams += '&' + encodeURIComponent('ver') + '=' + encodeURIComponent('1.3'); /**/
+		// 	console.log(url + queryParams);
+			
+		// 	xhr.open('GET', url + queryParams);
+		// 	xhr.onreadystatechange = function () {
+		// 		if (this.readyState == 4) {
+		// 			alert('Status: ' + this.status + 'nHeaders: ' + JSON.stringify(this.getAllResponseHeaders()) + 'nBody: ' + this.responseText);
+		// 		}
+		// 	};
+
+		// 	xhr.send('');
+
+		// })
+
+
+	</script>
+</body>
+
+</html>
