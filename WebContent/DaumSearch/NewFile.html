@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Search Using DAUM KAKAO API</title>
+
+	<style>
+		*{
+			box-sizing: border-box;
+		}
+		.body {
+			background-color: #fcffff;
+
+		}
+
+		a {
+			color: black;
+			display: block;
+			text-decoration: none;
+		}
+
+		.wrap {
+
+			display: flex;
+			flex-direction: row;
+			width: 860px;
+		}
+
+		.img_wrap {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin: 5px 20px 5px 20px;
+			height: 200px;
+			margin: auto;
+			border-bottom: 0.3px solid lightgray;
+		}
+
+		img {
+			width: 250px;
+			border: 1px solid lightgray;
+			border-radius: 5%;
+		}
+
+		.info_wrap {
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			height: 200px;
+			width: 550px;
+			font-style: normal;
+
+			vertical-align: top;
+			padding-bottom: 30px;
+			margin: 5px 20px 5px 20px;
+			border-bottom: 0.3px solid lightgray;
+		}
+
+		h3 {
+			font-size: 19px;
+			display: block;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			height: 30px;
+			width: 500px;
+			padding: 0;
+			margin-bottom: 15px;
+		}
+
+		p {
+			margin: 0;
+			padding: 0;
+			height: 20px;
+			margin-top: 9px;
+		}
+
+		span {
+			margin: 0;
+			padding: 0;
+			margin-top: 5px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<input type="text" placeholder="검색어를 입력하세요." id="search">
+	<input type="button" value="검색" id="btn">
+
+	<div class='body'>
+
+		여기 출력
+
+	</div>
+
+
+	<script src="https://code.jquery.com/jquery-3.5.1.js"
+		integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+
+	<script>
+		var search = document.getElementById('search'),
+			btn = document.getElementById('btn');
+
+		window.addEventListener('load', () => {
+
+			document.addEventListener('keydown', key => {
+				// if (key.keyCode == 13) {
+				// 	searching.call();
+				// }
+
+				if (key.keyCode == 13) searching.call();
+
+			})
+
+			btn.addEventListener('click', () => {
+				searching.call();
+			})
+
+
+		})
+
+		var searching = function () {
+
+
+			var keyword = search.value;
+			var key = 'c79894704961c13c8132a6554d236609';
+			$.ajax({
+				method: "GET",
+				url: "https://dapi.kakao.com/v2/search/vclip",
+				data: {
+					query: keyword
+					// sort: 'accuracy',
+					// page: 1,
+					// size: 10
+				},
+				headers: { Authorization: `KakaoAK ${key}` }
+
+			})
+				.done(function (response) {
+					// alert("Data Saved: " + msg);
+					console.log(response);
+					var body = document.querySelector('.body');
+					body.textContent = '검색어 : ' + keyword;
+					var docs = response.documents;
+					for (var i = 0; i < docs.length; i++) {
+						// console.log(i);
+						var a = document.createElement('a');
+						var wrap = document.createElement('div');
+						var imgWrap = document.createElement('div');
+						var img = document.createElement('img');
+						var infoWrap = document.createElement('div');
+
+						var title = document.createElement('h3');
+						var author = document.createElement('p');
+						var date = document.createElement('span');
+
+						a.appendChild(wrap);
+
+						wrap.appendChild(imgWrap)
+						wrap.appendChild(infoWrap)
+						wrap.className = 'wrap';
+
+						imgWrap.appendChild(img);
+						imgWrap.className = 'img_wrap';
+
+						infoWrap.appendChild(title);
+						infoWrap.appendChild(author);
+						infoWrap.appendChild(date);
+						infoWrap.className = 'info_wrap';
+
+
+
+						a.href = docs[i].url;
+						a.target = '_blank';
+
+						img.src = docs[i].thumbnail;
+						title.textContent = docs[i].title;
+						author.textContent = docs[i].author;
+						date.textContent = docs[i].datetime;
+
+						body.appendChild(a);
+					}
+
+
+
+				});
+
+			search.value = "";
+		}
+
+	</script>
+</body>
+
+</html>
